@@ -19,10 +19,15 @@ using namespace std;
 
 // test template
 
-void template_test() {
-    Timer test = Timer();
-    test.example_function();
-    assert(test.get_placeholder1() == 2);
+void timer_test() {
+    Timer test = Timer(1567904460);
+    test.update();
+    cout << test.getEventUnixTime() << endl;
+    cout << test.getDays() << endl;
+    cout << test.getHours() << endl;
+    cout << test.getMinutes() << endl;
+    cout << test.getSeconds() << endl;
+    //assert(test.get_placeholder1() == 2);
     cout << "template_test passed!" << endl;
 }
 
@@ -33,7 +38,7 @@ void template_test() {
 int main(int, char**) {
     cout << endl << "********************************* timer start main *********************************" << endl << endl;
 
-    template_test();
+    timer_test();
 
     cout << endl << "********************************* end main *********************************" << endl << endl;
 
