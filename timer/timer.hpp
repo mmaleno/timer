@@ -12,7 +12,7 @@
 */
 
 /*  TODO:
-    - port update from old c code to this class
+    - see how tm struct can help us severely
     - implement date to unix time
     - add date to unix time to each constructor
     - add get date functions
@@ -21,6 +21,12 @@
 
 #ifndef TIMER_HPP_INCLUDED
 #define TIMER_HPP_INCLUDED
+
+#include <iostream>
+#include <ostream>
+#include <ctime>
+
+using namespace std;
 
 // Class to support countdown functionality
 class Timer {
@@ -61,7 +67,9 @@ class Timer {
    */
    void update();
 
-   long getEventUnixTime();
+   time_t getEventUnixTime();
+
+   void printEventTime();
 
    /*
       ...be sure to run update before using
@@ -75,26 +83,28 @@ class Timer {
 
  // Encoding
  private:
-   // Data members
-
-   /*
-
-   // Event's time parameters, to convert to Unix Time
-   // Need to make sure these values make sense
-   int eventYear_;
-   char eventMonth_;
-   char eventDay_;
-   char eventHour_;
-   char eventMinute_;
-   char eventSecond_;
-   */
+   // Data members 
 
    /*
       In C++, long has an upper value of 2147483647.
       Storing the Unix Time in a long is supported until
       January 2038: https://www.unixtimestamp.com/index.php
+      Switched to time_t to be more compatible with ctime
    */
-   long eventUnixTime_;
+   time_t eventUnixTime_;
+
+   struct tm * eventInfo_;
+   /* Info about tm *:   
+   eventInfo_ = localtime(&eventUnixTime_);
+   eventInfo_->tm_sec --- seconds after the minute [0, 60]
+   eventInfo_->tm_min --- minutes after the hour [0, 59]
+   eventInfo_->tm_hour --- hours since midnight [0, 23]
+   eventInfo_->tm_mday --- day of the month [1, 31]
+   eventInfo_->tm_mon --- months since January [0, 11]
+   eventInfo_->tm_year --- years since 1900
+   eventInfo_->tm_wday --- days since Sunday [0, 6]
+   eventInfo_->tm_yday --- days since January 1 [0, 365]
+*/
 
    // Time remaining until event
    int days_;

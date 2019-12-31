@@ -8,27 +8,18 @@
 
  /* For latest commit and TODO info, see timer header file */
 
-#include <iostream>
-#include <ostream>
-#include "time.h"           // to get the current system UNIX time
 #include "timer.hpp"
 
 // most commonly used constructor
 Timer::Timer(long eventUnixTime)
-    :   /*eventYear_{0},      // to be calculated?
-        eventMonth_{0},     // to be calculated?
-        eventDay_{0},       // to be calculated?
-        eventHour_{0},      // to be calculated?
-        eventMinute_{0},    // to be calculated?
-        eventSecond_{0},*/     // to be calculated?
-        eventUnixTime_{eventUnixTime},
+    :   eventUnixTime_{eventUnixTime},
+        eventInfo_{localtime(&eventUnixTime_)},
         days_{0},           // to be set by update
         hours_{0},          // to be set by update
         minutes_{0},        // to be set by update
         seconds_{0}         // to be set by update
 {
-    update(); // sets time-remaining data members
-    // calculate event times?
+    update();
 }
 
 /* TO BE IMPLEMENTED
@@ -105,8 +96,18 @@ void Timer::setSecond(char eventSecond) {
 */
 
 // get event's unix time
-long Timer::getEventUnixTime() {
+time_t Timer::getEventUnixTime() {
     return eventUnixTime_;
+}
+
+void Timer::printEventTime() {
+    cout
+    << eventInfo_->tm_mon + 1 << " "
+    << eventInfo_->tm_mday << " "
+    << eventInfo_->tm_year + 1900 << " "
+    << eventInfo_->tm_hour << " "
+    << eventInfo_->tm_min << " "
+    << eventInfo_->tm_sec << endl;
 }
 
 // get days remaining in countdown
