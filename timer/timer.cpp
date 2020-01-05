@@ -11,9 +11,9 @@
 #include "timer.hpp"
 
 // most commonly used constructor
-Timer::Timer(long eventUnixTime)
-    :   eventUnixTime_{eventUnixTime},
-        eventInfo_{localtime(&eventUnixTime_)},
+Timer::Timer(long eventEpochTime)
+    :   eventEpochTime_{eventEpochTime},
+        eventInfo_{localtime(&eventEpochTime_)},
         days_{0},           // to be set by update
         hours_{0},          // to be set by update
         minutes_{0},        // to be set by update
@@ -32,13 +32,13 @@ Timer::Timer(int year, char month, char day)
         eventHour_{0},
         eventMinute_{0},
         eventSecond_{0},
-        eventUnixTime_{0},
+        eventEpochTime_{0},
         days_{0},
         hours_{0},
         minutes_{0},
         seconds_{0}
 {
-    // Calculate eventUnixTime_, run update()
+    // Calculate eventEpochTime_, run update()
 }
 
 // constructor for time during a certain day
@@ -49,17 +49,17 @@ Timer::Timer(int year, char month, char day, char hour, char minute, char second
         eventHour_{hour},
         eventMinute_{minute},
         eventSecond_{second},
-        eventUnixTime_{0},
+        eventEpochTime_{0},
         days_{0},
         hours_{0},
         minutes_{0},
         seconds_{0}
 {
-    // Calculate eventUnixTime_, run update()
+    // Calculate eventEpochTime_, run update()
 }
 
-void Timer::setTime(long eventUnixTime) {
-    eventUnixTime_ = eventUnixTime;
+void Timer::setTime(long eventEpochTime) {
+    eventEpochTime_ = eventEpochTime;
     update();
 }
 
@@ -95,9 +95,9 @@ void Timer::setSecond(char eventSecond) {
 
 */
 
-// get event's unix time
-time_t Timer::getEventUnixTime() {
-    return eventUnixTime_;
+// get event's Epoch time
+time_t Timer::getEventEpochTime() {
+    return eventEpochTime_;
 }
 
 void Timer::printEventTime() {
@@ -131,12 +131,12 @@ int Timer::getSeconds() {
 }
 
 void Timer::update() {
-    long nowUnixTime = (long)time(NULL);
-    long diffUnixTime = eventUnixTime_ - nowUnixTime;
+    long nowEpochTime = (long)time(NULL);
+    long diffEpochTime = eventEpochTime_ - nowEpochTime;
 
     // calculate time divisions from the amount of remaining seconds until event
-    days_ = diffUnixTime / (60*60*24);
-    hours_ = (diffUnixTime % (60*60*24)) / (60*60);
-    minutes_ = ((diffUnixTime % (60*60*24)) % (60*60)) / 60;
-    seconds_ = (((diffUnixTime % (60*60*24)) % (60*60)) % 60);
+    days_ = diffEpochTime / (60*60*24);
+    hours_ = (diffEpochTime % (60*60*24)) / (60*60);
+    minutes_ = ((diffEpochTime % (60*60*24)) % (60*60)) / 60;
+    seconds_ = (((diffEpochTime % (60*60*24)) % (60*60)) % 60);
 }

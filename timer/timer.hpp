@@ -13,8 +13,8 @@
 
 /*  TODO:
     - see how tm struct can help us severely
-    - implement date to unix time
-    - add date to unix time to each constructor
+    - implement date to Epoch time
+    - add date to Epoch time to each constructor
     - add get date functions
 */
 
@@ -33,13 +33,12 @@ class Timer {
  // Interface
  public:
    // Constructors
-   Timer() = delete;  // Set everything to zero
-   Timer(long eventUnixTime);
-   // Set eventUnixTime_, calculate day/month/year
+   Timer() = delete;
+   Timer(long eventEpochTime);
 
-   /* TO BE IMPLEMENTED
+   /* TO BE IMPLEMENTED */
 
-   // Need to convert from human time to unix time
+   // Need to convert from human time to Epoch time
    // using ints to accept pos/neg values, will filter
    // results within constructor
    Timer(int year, char month, char day);
@@ -48,16 +47,13 @@ class Timer {
    // Member functions
 
    // Set the time
-   void setTime(long eventUnixTime);
+   void setTime(long eventEpochTime);
    void setYear(int eventYear);
    void setMonth(char eventMonth);
    void setDay(char eventDay);
    void setHour(char eventHour);
    void setMinute(char eventMinute);
    void setSecond(char eventSecond);
-
-
-   */
    
 
    /*
@@ -67,7 +63,7 @@ class Timer {
    */
    void update();
 
-   time_t getEventUnixTime();
+   time_t getEventEpochTime();
 
    void printEventTime();
 
@@ -87,15 +83,15 @@ class Timer {
 
    /*
       In C++, long has an upper value of 2147483647.
-      Storing the Unix Time in a long is supported until
-      January 2038: https://www.unixtimestamp.com/index.php
+      Storing the Epoch Time in a long is supported until
+      January 2038: https://www.Epochtimestamp.com/index.php
       Switched to time_t to be more compatible with ctime
    */
-   time_t eventUnixTime_;
+   time_t eventEpochTime_;
 
    struct tm * eventInfo_;
    /* Info about tm *:   
-   eventInfo_ = localtime(&eventUnixTime_);
+   eventInfo_ = localtime(&eventEpochTime_);
    eventInfo_->tm_sec --- seconds after the minute [0, 60]
    eventInfo_->tm_min --- minutes after the hour [0, 59]
    eventInfo_->tm_hour --- hours since midnight [0, 23]

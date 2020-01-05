@@ -24,7 +24,7 @@ using namespace std;
 void timer_test() {
     Timer test = Timer(1567904460);
     test.update();
-    cout << test.getEventUnixTime() << endl;
+    cout << test.getEventEpochTime() << endl;
     cout << test.getDays() << endl;
     cout << test.getHours() << endl;
     cout << test.getMinutes() << endl;
@@ -66,6 +66,26 @@ void crap(bool live) {
     }
 }
 
+void shit() {
+    // test out mktime
+    cout << "start shit test" << endl;
+    struct tm * testTM = new struct tm;
+    testTM->tm_mon = 8;
+    testTM->tm_mday = 7;
+    testTM->tm_year = 119;
+    testTM->tm_hour = 6;
+    testTM->tm_min = 1;
+    testTM->tm_sec = 0;
+    cout
+    << testTM->tm_mon + 1 << " "
+    << testTM->tm_mday << " "
+    << testTM->tm_year + 1900 << " "
+    << testTM->tm_hour << " "
+    << testTM->tm_min << " "
+    << testTM->tm_sec << endl;
+    delete testTM;
+}
+
 
 ///////////////////////////////////////////////////////////
 //  MAIN
@@ -75,7 +95,9 @@ int main(int, char**) {
     
     cout << endl << "********************************* timer start main *********************************" << endl << endl;
 
-    timer_test();
+    //timer_test();
+
+    shit();
 
     cout << endl << "********************************* end main *********************************" << endl << endl;
 
