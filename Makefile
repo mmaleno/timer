@@ -12,14 +12,6 @@
 #  *
 #  */
 
-# /*
-# Need to change "CLASS" & "Class" instances
-# -testing names as necessary
-# -testing: object file names
-# -class.o: object file names
-# -comments!!
-# */
-
 # widely-used compiler
 CXX = clang++
 
@@ -30,11 +22,11 @@ CXX_FLAGS = -g -std=c++1z -Wall -Wextra -pedantic
 timerTest: testing.o timer.o
 	$(CXX) -o timerTest testing.o timer.o
 
-# recompile testing script if its implementation or class files change
-testing.o: testing.cpp
+# recompile testing script if its implementation or timer header change
+testing.o: testing.cpp timer/timer.hpp
 	$(CXX) $(CXX_FLAGS) -g -c testing.cpp
 
-# recompile class.cpp if any dependencies changes
+# recompile timer.cpp if any dependencies changes
 timer.o: timer/timer.cpp timer/timer.hpp
 	$(CXX) $(CXX_FLAGS) -g -c timer/timer.cpp
 

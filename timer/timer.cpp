@@ -3,7 +3,7 @@
  * \authors Max Maleno [mmaleno@hmc.edu]
  * \brief Timer class implentation
  *
- * \details Created 12/27/19, last updated 12/30/19
+ * \details Created 12/27/19, last updated 01/05/20
  */
 
  /* For latest commit and TODO info, see timer header file */
@@ -11,103 +11,88 @@
 #include "timer.hpp"
 
 // most commonly used constructor
-Timer::Timer(long eventEpochTime)
+Timer::Timer(time_t eventEpochTime)
     :   eventEpochTime_{eventEpochTime},
-        eventInfo_{localtime(&eventEpochTime_)},
-        days_{0},           // to be set by update
-        hours_{0},          // to be set by update
-        minutes_{0},        // to be set by update
-        seconds_{0}         // to be set by update
+        eventInfo_{localtime(&eventEpochTime_)}
 {
+    if (eventEpochTime > 2147483647) {
+        cout << "Warning! Be sure your system"
+        << "time_t mitigates Y2038..." << endl;
+    }
     update();
 }
 
-/* TO BE IMPLEMENTED
-
-// constructor for the day, not the time during the day
-Timer::Timer(int year, char month, char day)
-    :   eventYear_{year},
-        eventMonth_{month},
-        eventDay_{day},
-        eventHour_{0},
-        eventMinute_{0},
-        eventSecond_{0},
-        eventEpochTime_{0},
-        days_{0},
-        hours_{0},
-        minutes_{0},
-        seconds_{0}
+// constructor for a day
+// ISO 8601 for the win!!
+Timer::Timer(int year, int month, int day)
 {
-    // Calculate eventEpochTime_, run update()
+    // See header file for explanation of members
+    eventInfo_->tm_year = year - 1900;
+    eventInfo_->tm_mon = month - 1;
+    eventInfo_->tm_mday = day;
+    eventInfo_->tm_hour = 0;
+    eventInfo_->tm_min = 0;
+    eventInfo_->tm_sec = 0;
+    eventEpochTime_ = mktime(eventInfo_);
+    update();
 }
 
-// constructor for time during a certain day
-Timer::Timer(int year, char month, char day, char hour, char minute, char second)
-    :   eventYear_{year},
-        eventMonth_{month},
-        eventDay_{day},
-        eventHour_{hour},
-        eventMinute_{minute},
-        eventSecond_{second},
-        eventEpochTime_{0},
-        days_{0},
-        hours_{0},
-        minutes_{0},
-        seconds_{0}
+// constructor for a time during a certain day
+Timer::Timer(int year, int month, int day, int hour, int minute, int second)
 {
-    // Calculate eventEpochTime_, run update()
+    // See header file for explanation of members
+    eventInfo_->tm_year = year - 1900;
+    eventInfo_->tm_mon = month - 1;
+    eventInfo_->tm_mday = day;
+    eventInfo_->tm_hour = hour;
+    eventInfo_->tm_min = minute;
+    eventInfo_->tm_sec = second;
+    eventEpochTime_ = mktime(eventInfo_);
+    update();
 }
 
-void Timer::setTime(long eventEpochTime) {
+void Timer::setEpoch(time_t eventEpochTime) {
     eventEpochTime_ = eventEpochTime;
-    update();
+    eventInfo_ = localtime(&eventEpochTime_);
 }
 
-void Timer::setYear(int eventYear) {
-    eventYear_ = eventYear;
-    update();
+void Timer::setYear(int year) {
+    if (year >= 2038) {
+        cout << "Warning! Be sure your system"
+        << "time_t mitigates Y2038..." << endl;
+    }
+    eventInfo_->tm_year = year;
+    eventEpochTime_ = mktime(eventInfo_);
 }
 
-void Timer::setMonth(char eventMonth) {
-    eventMonth_ = eventMonth;
-    update();
+void Timer::setMonth(int month) {
+    eventInfo_->tm_mon = month - 1;
+    eventEpochTime_ = mktime(eventInfo_);
 }
 
-void Timer::setDay(char eventDay) {
-    eventDay_ = eventDay;
-    update();
+void Timer::setDay(int day) {
+    eventInfo_->tm_mday = day;
+    eventEpochTime_ = mktime(eventInfo_);
 }
 
-void Timer::setHour(char eventHour) {
-    eventHour_ = eventHour;
-    update();
+void Timer::setHour(int hour) {
+    eventInfo_->tm_hour = hour;
+    eventEpochTime_ = mktime(eventInfo_);
 }
 
-void Timer::setMinute(char eventMinute) {
-    eventMinute_ = eventMinute;
-    update();
+void Timer::setMinute(int minute) {
+    eventInfo_->tm_min = minute;
+    eventEpochTime_ = mktime(eventInfo_);
 }
 
-void Timer::setSecond(char eventSecond) {
-    eventSecond_ = eventSecond;
-    update();
+void Timer::setSecond(int second) {
+    eventInfo_->tm_sec = second;
+    eventEpochTime_ = mktime(eventInfo_);
 }
-
-*/
 
 // get event's Epoch time
 time_t Timer::getEventEpochTime() {
     return eventEpochTime_;
-}
-
-void Timer::printEventTime() {
-    cout
-    << eventInfo_->tm_mon + 1 << " "
-    << eventInfo_->tm_mday << " "
-    << eventInfo_->tm_year + 1900 << " "
-    << eventInfo_->tm_hour << " "
-    << eventInfo_->tm_min << " "
-    << eventInfo_->tm_sec << endl;
 }
 
 // get days remaining in countdown
@@ -131,12 +116,28 @@ int Timer::getSeconds() {
 }
 
 void Timer::update() {
-    long nowEpochTime = (long)time(NULL);
-    long diffEpochTime = eventEpochTime_ - nowEpochTime;
+    time_t diffEpochTime = eventEpochTime_ - time(nullptr);
 
     // calculate time divisions from the amount of remaining seconds until event
     days_ = diffEpochTime / (60*60*24);
     hours_ = (diffEpochTime % (60*60*24)) / (60*60);
     minutes_ = ((diffEpochTime % (60*60*24)) % (60*60)) / 60;
     seconds_ = (((diffEpochTime % (60*60*24)) % (60*60)) % 60);
+}
+
+std::ostream& operator<<(std::ostream& os, const Timer& t) {
+    os
+    << "Ev Ep: " << t.eventEpochTime_ << endl
+    << "Ev Yr: " << t.eventInfo_->tm_year + 1900 << endl
+    << "Ev Mo: " << t.eventInfo_->tm_mon + 1 << endl
+    << "Ev D: " << t.eventInfo_->tm_mday << endl
+    << "Ev Hr: " << t.eventInfo_->tm_hour << endl
+    << "Ev Min: " << t.eventInfo_->tm_min << endl
+    << "Ev Sec: " << t.eventInfo_->tm_sec << endl
+    << "Rem D: " << t.days_ << endl
+    << "Rem Hr: " << t.hours_ << endl
+    << "Rem Min: " << t.minutes_ << endl
+    << "Rem Sec: " << t.seconds_ << endl;
+
+    return os;
 }
