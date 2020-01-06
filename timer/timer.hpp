@@ -6,40 +6,36 @@
  * \details Created 12/27/19, last updated 01/05/20
  */
 
-
 /*  Latest commit:
-    - tweaked makefile
-    - cleaned up interface
-    - finished implementing interface
+    - fixed segfault error by tweaking encoding
+    - added comments
 */
 
 /*  TODO:
-    - 
+    - implement getEventInfo
+    - explore why third constructor still doesn't match up
+      using method from last night
+    - finish testing file / example functions
 */
-
 
 #ifndef TIMER_HPP_INCLUDED
 #define TIMER_HPP_INCLUDED
 
 #include <iostream>
-#include <ostream>
 #include <ctime>
 
 using namespace std;
 
 // Class to support countdown functionality
 class Timer {
- // Interface
  public:
-   // Constructors
    Timer() = delete;
-   Timer(long eventEpochTime);
+   Timer(time_t eventEpochTime);
    Timer(int year, int month, int day);
    Timer(int year, int month, int day, int hour, int minute, int second);
+   ~Timer();
 
-   // Member functions
-
-   // Set the time
+   // Set time fields post object-initialization
    void setEpoch(time_t eventEpochTime);
    void setYear(int year);
    void setMonth(int month);
@@ -47,7 +43,6 @@ class Timer {
    void setHour(int hour);
    void setMinute(int minute);
    void setSecond(int second);
-   
 
    /*
       _Needs_ to be run as close as possible
@@ -58,7 +53,7 @@ class Timer {
 
    time_t getEventEpochTime();
 
-   tm getEventInfo();
+   tm getEventInfo();   //TODO: need to implement/test
 
    /*
       Be sure to run update before using
@@ -72,23 +67,25 @@ class Timer {
    // friend allows this function to access private data members
    friend std::ostream& operator<<(std::ostream& os, const Timer& t);
 
- // Encoding
  private:
-   // Data members 
    time_t eventEpochTime_;
-   struct tm * eventInfo_;
-   /* Info about tm *:   
-   eventInfo_ = localtime(&eventEpochTime_);
-   eventInfo_->tm_sec --- seconds after the minute [0, 60]
-   eventInfo_->tm_min --- minutes after the hour [0, 59]
-   eventInfo_->tm_hour --- hours since midnight [0, 23]
-   eventInfo_->tm_mday --- day of the month [1, 31]
-   eventInfo_->tm_mon --- months since January [0, 11]
-   eventInfo_->tm_year --- years since 1900
-   eventInfo_->tm_wday --- days since Sunday [0, 6]
-   eventInfo_->tm_yday --- days since January 1 [0, 365]
+   tm* eventInfo_ = new tm;
+   /* Info about tm *:
 
-   To update epoch value and eventInfo_ fields from datetime:
+   eventInfo_ = localtime(&eventEpochTime_); --- to get time info from epoch value
+   localtime_r(&eventEpochTime_, eventInfo_); --- thread-safe method
+
+
+   tm_sec --- seconds after the minute [0, 60]
+   tm_min --- minutes after the hour [0, 59]
+   tm_hour --- hours since midnight [0, 23]
+   tm_mday --- day of the month [1, 31]
+   tm_mon --- months since January [0, 11]
+   tm_year --- years since 1900
+   tm_wday --- days since Sunday [0, 6]
+   tm_yday --- days since January 1 [0, 365]
+
+   To update epoch value and eventInfo_ fields from datetime. Opposite of locatime.
    eventEpochTime_ = mktime(eventInfo_); // update epoch value, fill out eventInfo_
    */
 

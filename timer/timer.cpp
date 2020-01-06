@@ -6,26 +6,25 @@
  * \details Created 12/27/19, last updated 01/05/20
  */
 
- /* For latest commit and TODO info, see timer header file */
+/* For latest commit and TODO info, see timer header file */
 
 #include "timer.hpp"
 
-// most commonly used constructor
+// constructor for exact epoch value
 Timer::Timer(time_t eventEpochTime)
-    :   eventEpochTime_{eventEpochTime},
-        eventInfo_{localtime(&eventEpochTime_)}
+    :   eventEpochTime_{eventEpochTime}
 {
     if (eventEpochTime > 2147483647) {
         cout << "Warning! Be sure your system"
         << "time_t mitigates Y2038..." << endl;
     }
+    localtime_r(&eventEpochTime_, eventInfo_);
     update();
 }
 
 // constructor for a day
 // ISO 8601 for the win!!
-Timer::Timer(int year, int month, int day)
-{
+Timer::Timer(int year, int month, int day) {
     // See header file for explanation of members
     eventInfo_->tm_year = year - 1900;
     eventInfo_->tm_mon = month - 1;
@@ -38,8 +37,7 @@ Timer::Timer(int year, int month, int day)
 }
 
 // constructor for a time during a certain day
-Timer::Timer(int year, int month, int day, int hour, int minute, int second)
-{
+Timer::Timer(int year, int month, int day, int hour, int minute, int second) {
     // See header file for explanation of members
     eventInfo_->tm_year = year - 1900;
     eventInfo_->tm_mon = month - 1;
@@ -51,11 +49,16 @@ Timer::Timer(int year, int month, int day, int hour, int minute, int second)
     update();
 }
 
+// destructor
+Timer::~Timer() { delete eventInfo_; }
+
+// set/change epoch time of event
 void Timer::setEpoch(time_t eventEpochTime) {
     eventEpochTime_ = eventEpochTime;
-    eventInfo_ = localtime(&eventEpochTime_);
+    localtime_r(&eventEpochTime_, eventInfo_);
 }
 
+// set/change year of event
 void Timer::setYear(int year) {
     if (year >= 2038) {
         cout << "Warning! Be sure your system"
@@ -65,26 +68,31 @@ void Timer::setYear(int year) {
     eventEpochTime_ = mktime(eventInfo_);
 }
 
+// set/change month of event
 void Timer::setMonth(int month) {
     eventInfo_->tm_mon = month - 1;
     eventEpochTime_ = mktime(eventInfo_);
 }
 
+// set/change day of event
 void Timer::setDay(int day) {
     eventInfo_->tm_mday = day;
     eventEpochTime_ = mktime(eventInfo_);
 }
 
+// set/change hour of event
 void Timer::setHour(int hour) {
     eventInfo_->tm_hour = hour;
     eventEpochTime_ = mktime(eventInfo_);
 }
 
+// set/change minute of event
 void Timer::setMinute(int minute) {
     eventInfo_->tm_min = minute;
     eventEpochTime_ = mktime(eventInfo_);
 }
 
+// set/change second of event
 void Timer::setSecond(int second) {
     eventInfo_->tm_sec = second;
     eventEpochTime_ = mktime(eventInfo_);
@@ -115,6 +123,7 @@ int Timer::getSeconds() {
     return seconds_;
 }
 
+// refresh all time-remaining members
 void Timer::update() {
     time_t diffEpochTime = eventEpochTime_ - time(nullptr);
 
@@ -125,6 +134,7 @@ void Timer::update() {
     seconds_ = (((diffEpochTime % (60*60*24)) % (60*60)) % 60);
 }
 
+// overload operator for timer object
 std::ostream& operator<<(std::ostream& os, const Timer& t) {
     os
     << "Ev Ep: " << t.eventEpochTime_ << endl

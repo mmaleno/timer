@@ -7,7 +7,6 @@
  */
 
 #include <iostream>
-#include <ostream>
 #include <cassert>
 #include <ctime>
 #include "timer/timer.hpp"
@@ -32,7 +31,7 @@ void timer_test() {
     test.printEventTime();
     */
     cout << test << endl;
-    //assert(test.get_placeholder1() == 2);
+    // assert(test.get_placeholder1() == 2);
     cout << "timer_test passed!" << endl;
 }
 
@@ -46,6 +45,7 @@ void test_constructor_epoch() {
 void test_constructor_date() {
     cout << "start test_constructor_date" << endl;
     Timer test = Timer(2019, 9, 7);
+    // cout << "object created" << endl;
     cout << test;
     cout << "end test_constructor_date" << endl << endl;
 }
@@ -56,15 +56,20 @@ void test_constructor_datetime() {
     cout << test;
     cout << "end test_constructor_datetime" << endl << endl;
 }
-
+/*
 void crap(bool live) {
+    cout << "inside crap" << endl;
     time_t currentTimeT;
-    struct tm* tmStruct;
-    if(live) {
-        while(1) {
-            
+    tm* tmStruct;
+    cout << "after allocations" << endl;
+    if (live) {
+        cout << "inside if" << endl;
+        while (1) {
+            cout << "inside while" << endl;
             currentTimeT = time(nullptr);
-            tmStruct = localtime(&currentTimeT);
+            cout << "after currentTimeT" << endl;
+            tmStruct = localtime_r(&currentTimeT, tmStruct);
+            cout << "after localtime_r" << endl;
             cout
             << tmStruct->tm_mon + 1 << " "
             << tmStruct->tm_mday << " "
@@ -72,17 +77,17 @@ void crap(bool live) {
             << tmStruct->tm_hour << " "
             << tmStruct->tm_min << " "
             << tmStruct->tm_sec << endl;
-            
+
             time_t diffTime = 1567904460 - time(nullptr);
             cout << diffTime << endl;
         }
     }
 }
-
+*/
 void shit() {
     // test out mktime
     cout << "start shit test" << endl;
-    //struct tm * testTM = new struct tm;
+    // struct tm * testTM = new struct tm;
     struct tm testTM;
     testTM.tm_mon = 8;
     testTM.tm_mday = 7;
@@ -114,7 +119,7 @@ void shit() {
     << testTM.tm_yday << " "
     << testTM.tm_isdst << endl;
     cout << "crack: " << crack << endl;
-    //delete testTM;
+    // delete testTM;
 }
 
 
@@ -123,17 +128,37 @@ void shit() {
 ///////////////////////////////////////////////////////////
 
 int main(int, char**) {
-    
-    cout << endl << "********************************* timer start main *********************************" << endl << endl;
-    
-    //timer_test();
+    cout << endl << "********************************* "
+    << "timer start main *********************************" << endl << endl;
+
+    //crap(1);
+    // timer_test();
     test_constructor_epoch();
     test_constructor_date();
     test_constructor_datetime();
-    //shit();
+    // shit();
 
-    //heroin();
+    // heroin();
 
-    cout << endl << "********************************* end main *********************************" << endl << endl;    
+    //Timer test = Timer(1567904460);
+    /*
+    Timer test = Timer(2020, 12, 18);
+
+    // cout << "after object creation" << endl;
+    
+    while(1) {
+        cout
+        << test.getEventEpochTime() << " "
+        << test.getDays() << " "
+        << test.getHours() << " "
+        << test.getMinutes() << " "
+        << test.getSeconds() << " "
+        << endl;
+        test.update();
+    }
+    */
+
+    cout << endl << "********************************* "
+    << "end main *********************************" << endl << endl;
     return 0;
 }
